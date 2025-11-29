@@ -1,6 +1,6 @@
 # SLAM Bot
 ---
-* Utilizing lidar to control robot via web UI with thetastar navigation*
+*Utilizing lidar to control robot via web UI with thetastar navigation*
 ---
 ## SLAM
 ### Simultanious localization and mapping, it finds the location of the robot relative to a map, and also discovers new parts of the map, simultaniously, as the name should suggest.
