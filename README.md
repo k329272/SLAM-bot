@@ -15,3 +15,15 @@
 - Tracking and following objects
 - Implementing 3D lidar or ToF
 - More advanced navigation (Routines, avoid other moving objects.
+---
+## List of parts:
+- 1 x Raspberry Pi Zero 2 W
+- 2 x DfRobot Micro DC Motor with Encoder-SJ01
+- 1 x Printed circuit board
+- 1 x Raspberry Pi Header
+- 1 x RpLidar A1
+- 1 x 9 Volt battery
+- 1 x Barrel jack adapter for battery
+- 1 x Barrel jack for circuit board
+- 1 x 5V regulator (1.5 A)
+- 1 x 30mm Fan
