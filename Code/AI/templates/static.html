@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <title>RPLIDAR SLAM UI</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #222; color: #ddd; }
+    #map { border: 1px solid #555; image-rendering: pixelated; margin-top: 10px;}
+  </style>
+</head>
+<body>
+  <h2>RPLIDAR SLAM — Theta* planner</h2>
+  <div>
+    <canvas id="map" width="800" height="800"></canvas>
+  </div>
+  <p>Click map to set goal.</p>
+  <script>
+    const socket = io();
+    const canvas = document.getElementById('map');
+    const ctx = canvas.getContext('2d');
+    let latestImg = null;
+
+    socket.on('connect', () => { console.log('connected'); });
+
+    socket.on('map', (data) => {
+      const b64 = data.img;
+      const img = new Image();
+      img.onload = () => {
+        // draw stretched to canvas
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = 'data:image/png;base64,' + b64;
+    });
+
+    canvas.addEventListener('click', (ev) => {
+      // send world coords; we assume server grid centered with known extents.
+      const rect = canvas.getBoundingClientRect();
+      const x = ev.clientX - rect.left;
+      const y = ev.clientY - rect.top;
+      // send normalized pixel coordinates; server will need to map to world (we will update server to accept world meters)
+      // For simplicity we'll just convert client-side to world using a conventional mapping - but server expects meters.
+      // We'll ask server for planning by sending relative coords in meters if server uses center origin.
+      // For now shoot a quick trick: assume map size is 10m (same as grid default) and canvas is square.
+      const mapMeters = 10.0;
+      const wx = (x / canvas.width) * mapMeters - mapMeters/2.0;
+      const wy = ((canvas.height - y) / canvas.height) * mapMeters - mapMeters/2.0;
+      socket.emit('set_goal', {x: wx, y: wy});
+    });
+
+    socket.on('plan_result', (data) => {
+      if (!data.ok) {
+        alert('Plan failed: ' + (data.reason || 'unknown'));
+      } else {
+        console.log('Plan received', data.path);
+      }
+    });
+  </script>
+</body>
+</html>
